@@ -9,20 +9,24 @@ function MyPromise(fn) {
   that.onSuccessCallBacks = [];
   that.onErrorCallbacks = [];
   function resolve(value) {
-    if (that.state === PENDING) {
-      that.state = RESOLVED;
-      that.value = value;
-      that.onSuccessCallBacks.map(cb => {
-        return cb(value);
-      });
-    }
+    setTimeout(() => {
+      if (that.state === PENDING) {
+        that.state = RESOLVED;
+        that.value = value;
+        that.onSuccessCallBacks.map(cb => {
+          return cb(value);
+        });
+      }
+    }, 0);
   }
   function rejecte(value) {
-    if (that.state === PENDING) {
-      that.state = REJECTED;
-      that.value = value;
-      that.onErrorCallbacks.map(cb => cb(value));
-    }
+    setTimeout(() => {
+      if (that.state === PENDING) {
+        that.state = REJECTED;
+        that.value = value;
+        that.onErrorCallbacks.map(cb => cb(value));
+      }
+    }, 0);
   }
   try {
     fn(resolve, rejecte);
@@ -54,14 +58,13 @@ MyPromise.prototype.then = function(resolve, rejecte) {
 };
 new MyPromise((resolve, reject) => {
   setTimeout(() => {
-    resolve(1);
+    resolve(2);
   }, 0);
 }).then(value => {
   console.log(value);
 });
-
 new MyPromise((resolve, reject) => {
-  resolve(2);
+  resolve(1);
 }).then(value => {
   console.log(value);
 });
