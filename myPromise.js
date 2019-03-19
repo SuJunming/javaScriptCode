@@ -13,9 +13,7 @@ function MyPromise(fn) {
       if (that.state === PENDING) {
         that.state = RESOLVED;
         that.value = value;
-        that.onSuccessCallBacks.map(cb => {
-          return cb(value);
-        });
+        that.onSuccessCallBacks.map(cb => cb(value));
       }
     }, 0);
   }
