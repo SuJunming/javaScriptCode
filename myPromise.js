@@ -1,53 +1,67 @@
 const PENDING = 0;
 const RESOLVED = 1;
 const REJECTED = 2;
+
 function MyPromise(fn) {
   const that = this;
   that.value = null;
   that.state = PENDING;
-  that.resovledCallbacks = [];
-  that.rejectedCallbacks = [];
+  that.onSuccessCallBacks = [];
+  that.onErrorCallbacks = [];
   function resolve(value) {
-    setTimeout(function() {
-      if (that.state === PENDING) {
-        that.state = RESOLVED;
-        that.value = value;
-        that.resovledCallbacks.map(cb => cb(value));
-      }
-    }, 0);
+    if (that.state === PENDING) {
+      that.state = RESOLVED;
+      that.value = value;
+      that.onSuccessCallBacks.map(cb => {
+        return cb(value);
+      });
+    }
   }
-  function reject(value) {
-    setTimeout(function() {
-      if (that.state === PENDING) {
-        that.state = REJECTED;
-        that.value = value;
-        that.rejectedCallbacks.map(cb => cb(value));
-      }
-    }, 0);
+  function rejecte(value) {
+    if (that.state === PENDING) {
+      that.state = REJECTED;
+      that.value = value;
+      that.onErrorCallbacks.map(cb => cb(value));
+    }
   }
   try {
-    fn(resolve, reject);
+    fn(resolve, rejecte);
   } catch (e) {
-    reject(e);
+    rejecte(e);
   }
 }
-MyPromise.prototype.then = function(resolve, reject) {
+
+MyPromise.prototype.then = function(resolve, rejecte) {
   const that = this;
-  const onSuccess = typeof resolve === "function" ? resolve : v => v;
-  const onError =
-    typeof resolve === "function"
-      ? resolve
-      : r => {
-          throw r;
+  resolve = typeof resolve === "function" ? resolve : v => v;
+  rejecte =
+    typeof rejecte === "function"
+      ? rejecte
+      : v => {
+          throw v;
         };
+
   if (that.state === PENDING) {
-    that.resovledCallbacks.push(onSuccess);
-    that.resovledCallbacks.push(onError);
+    that.onSuccessCallBacks.push(resolve);
+    that.onErrorCallbacks.push(rejecte);
   }
   if (that.state === RESOLVED) {
-    onSuccess(that.value);
+    resolve(that.value);
   }
   if (that.state === REJECTED) {
-    onError(that.value);
+    rejecte(that.value);
   }
 };
+new MyPromise((resolve, reject) => {
+  setTimeout(() => {
+    resolve(1);
+  }, 0);
+}).then(value => {
+  console.log(value);
+});
+
+new MyPromise((resolve, reject) => {
+  resolve(2);
+}).then(value => {
+  console.log(value);
+});
