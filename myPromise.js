@@ -9,22 +9,22 @@ function MyPromise(fn) {
   that.onSuccessCallBacks = [];
   that.onErrorCallbacks = [];
   function resolve(value) {
-    setTimeout(() => {
+ 
       if (that.state === PENDING) {
         that.state = RESOLVED;
         that.value = value;
         that.onSuccessCallBacks.map(cb => cb(value));
       }
-    }, 0);
+
   }
   function rejecte(value) {
-    setTimeout(() => {
+   
       if (that.state === PENDING) {
         that.state = REJECTED;
         that.value = value;
         that.onErrorCallbacks.map(cb => cb(value));
       }
-    }, 0);
+ 
   }
   try {
     fn(resolve, rejecte);
